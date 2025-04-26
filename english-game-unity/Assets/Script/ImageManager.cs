@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
-using Newtonsoft.Json.Linq; // Install Newtonsoft JSON package from Package Manager
+using Newtonsoft.Json.Linq;
 
 public class ImageManager : MonoBehaviour
 {

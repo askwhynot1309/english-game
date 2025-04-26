@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public GameObject gameOverPanel;
     public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI feedbackText;
+    public TextMeshProUGUI highscoreText;
 
     private List<WordData> words = new List<WordData>
     {
@@ -60,8 +61,18 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         StartNewRound();
+        SoundManager.Instance.PlayMusic();
         gameOverPanel.SetActive(false);
-        highScore = PlayerPrefs.GetInt("HighScore", 0);
+        StartCoroutine(GameAPI.Instance.GetHighScore(
+                score =>
+                {
+                    Debug.Log("Fetched high score: " + score);
+                    highscoreText.text = "Highscore: " + score.ToString();
+                },
+                error =>
+                {
+                    Debug.LogError("Failed to fetch high score: " + error);
+                }));
         answer1Button.onClick.AddListener(() => CheckAnswer(answer1Text.text));
         answer2Button.onClick.AddListener(() => CheckAnswer(answer2Text.text));
     }
@@ -79,21 +90,6 @@ public class GameManager : MonoBehaviour
                 GameOver();
             }
         }
-    }
-
-    void GameOver()
-    {
-        gameActive = false;
-        gameOverPanel.SetActive(true);
-
-        if (score > highScore)
-        {
-            highScore = score;
-            PlayerPrefs.SetInt("HighScore", highScore);
-            PlayerPrefs.Save();
-        }
-
-        finalScoreText.text = $"Final Score: {score}\nHigh Score: {highScore}";
     }
 
     void StartNewRound()
@@ -172,17 +168,40 @@ public class GameManager : MonoBehaviour
             scoreText.text = "Score: " + score;
             feedbackText.text = "Correct";
             feedbackText.color = Color.green;
+            SoundManager.Instance.PlayCorrect();
         }
         else
         {
             feedbackText.text = "Incorrect!";
             feedbackText.color = Color.red;
+            SoundManager.Instance.PlayWrong();
         }
 
         feedbackText.alpha = 1;
+        SetButtonsInteractable(false);
         StartCoroutine(HideFeedbackAfterDelay());
+    }
+    IEnumerator HideFeedbackAfterDelay()
+    {
+        yield return new WaitForSeconds(1f);
+        //SetButtonsInteractable(false);
+        feedbackText.alpha = 0;
+        ResetButtonsAndShowNext();
+    }
 
+    void ResetButtonsAndShowNext()
+    {
+        answer1Button.image.color = Color.white;
+        answer2Button.image.color = Color.white;
         StartNewRound();
+        SetButtonsInteractable(true);
+    }
+
+    //counter spam
+    void SetButtonsInteractable(bool interactable)
+    {
+        answer1Button.interactable = interactable;
+        answer2Button.interactable = interactable;
     }
 
     public void RestartGame()
@@ -197,9 +216,19 @@ public class GameManager : MonoBehaviour
         StartNewRound();
     }
 
-    IEnumerator HideFeedbackAfterDelay()
+    void GameOver()
     {
-        yield return new WaitForSeconds(0.5f);
-        feedbackText.alpha = 0;
+        gameActive = false;
+        gameOverPanel.SetActive(true);
+
+        StartCoroutine(GameAPI.Instance.PostPlayHistory(score,
+                    onSuccess: () => {
+                        Debug.Log("Score posted successfully.");
+                    },
+                    onError: (error) => {
+                        Debug.LogError($"Failed to post score: {error}");
+                    }));
+
+        finalScoreText.text = $"Final Score: {score}\nHigh Score: {highScore}";
     }
 }
