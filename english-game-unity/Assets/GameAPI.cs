@@ -36,7 +36,7 @@ public class GameAPI : MonoBehaviour
     public IEnumerator GetHighScore(Action<int> onSuccess, Action<string> onError)
     {
 
-        string url = $"https://localhost:7174/api/history/get-high-score?userId={userId}&gameId={gameId}";
+        string url = $"https://ifle-api.fusdeploy.site/api/history/get-high-score?userId={userId}&gameId={gameId}";
 
         UnityWebRequest request = UnityWebRequest.Get(url);
         request.SetRequestHeader("Authorization", $"Bearer {token}");
@@ -68,7 +68,7 @@ public class GameAPI : MonoBehaviour
         };
 
         string json = JsonUtility.ToJson(history);
-        UnityWebRequest request = new UnityWebRequest("https://localhost:7174/api/history/new-play-history", "POST");
+        UnityWebRequest request = new UnityWebRequest("https://ifle-api.fusdeploy.site/api/history/new-play-history", "POST");
         byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(json);
 
         request.uploadHandler = new UploadHandlerRaw(bodyRaw);
