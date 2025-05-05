@@ -64,7 +64,6 @@ public class GameManager : MonoBehaviour
     private string correctAnswer;
     private const string API_KEY = "0jjEcn9CHDFAk5GvSM0nISvfbjmEv7FfLFndfzKdF4cozSyr9e8xw7hM";
     private const string PEXELS_API_URL = "https://api.pexels.com/v1/search?query=";
-    private int highScore = 0;
 
     void Start()
     {
@@ -259,7 +258,16 @@ public class GameManager : MonoBehaviour
         gameOverPanel.SetActive(false);
         scoreText.text = "Score: " + score;
         timerText.text = "Time: " + Mathf.Ceil(timeRemaining);
-        Debug.Log("Restart Game");
+        StartCoroutine(GameAPI.Instance.GetHighScore(
+                        score =>
+                        {
+                            Debug.Log("Fetched high score: " + score);
+                            highscoreText.text = "Highscore: " + score.ToString();
+                        },
+                        error =>
+                        {
+                            Debug.LogError("Failed to fetch high score: " + error);
+                        })); SoundManager.Instance.PlayMusic();
         StartNewRound();
     }
 
@@ -276,6 +284,6 @@ public class GameManager : MonoBehaviour
                         Debug.LogError($"Failed to post score: {error}");
                     }));
 
-        finalScoreText.text = $"Final Score: {score}\nHigh Score: {highScore}";
+        finalScoreText.text = $"Final Score: {score}";
     }
 }
