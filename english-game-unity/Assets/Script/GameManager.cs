@@ -9,6 +9,10 @@ using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
+    public AstraInputController inputController;
+    public FootFollower footFollower;
+    public GameObject restartButton;
+
     public RawImage displayImage;
     public TextMeshProUGUI answer1Text;
     public TextMeshProUGUI answer2Text;
@@ -20,6 +24,10 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI finalScoreText;
     public TextMeshProUGUI feedbackText;
     public TextMeshProUGUI highscoreText;
+
+    private FootDetector detector1;
+    private FootDetector detector2;
+    private FootDetector restartDetector;
 
     private List<WordData> words = new List<WordData>
     {
@@ -75,7 +83,46 @@ public class GameManager : MonoBehaviour
                 }));
         answer1Button.onClick.AddListener(() => CheckAnswer(answer1Text.text));
         answer2Button.onClick.AddListener(() => CheckAnswer(answer2Text.text));
+
+        if (inputController == null)
+        {
+            inputController = FindFirstObjectByType<AstraInputController>();
+        }
+
+        if (inputController != null)
+        {
+            inputController.OnClickEvent.AddListener(HandleFootClick);
+        }
+
+        detector1 = answer1Button.GetComponent<FootDetector>();
+        detector2 = answer2Button.GetComponent<FootDetector>();
+        restartDetector = restartButton.GetComponent<FootDetector>();
     }
+
+    void HandleFootClick()
+    {
+        if (!gameActive)
+        {
+            if (restartDetector != null && restartDetector.IsFootOver && !restartDetector.hasClicked)
+            {
+                restartDetector.hasClicked = true;
+                RestartGame();
+            }
+            return;
+        }
+
+        if (detector1 != null && detector1.IsFootOver && !detector1.hasClicked)
+        {
+            detector1.hasClicked = true;
+            CheckAnswer(answer1Text.text);
+        }
+        else if (detector2 != null && detector2.IsFootOver && !detector2.hasClicked)
+        {
+            detector2.hasClicked = true;
+            CheckAnswer(answer2Text.text);
+        }
+    }
+
 
     void Update()
     {
