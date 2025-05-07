@@ -6,11 +6,11 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using TMPro;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public AstraInputController inputController;
-    public FootFollower footFollower;
     public GameObject restartButton;
 
     public RawImage displayImage;
@@ -261,6 +261,7 @@ public class GameManager : MonoBehaviour
         timerText.text = "Time: " + Mathf.Ceil(timeRemaining);
         Debug.Log("Restart Game");
         StartNewRound();
+        //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     void GameOver()
