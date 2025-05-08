@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 public class FootFollower : MonoBehaviour
 {
@@ -25,10 +26,27 @@ public class FootFollower : MonoBehaviour
 
     private void Start()
     {
-        realMinX = -0.70f;
-        realMaxX = 0.73f;
-        realMinY = 2.89f;
-        realMaxY = 1.96f;
+        var floorWidth = CommandLineReader.FloorWidth.ToString();
+        floorWidth = floorWidth.Replace(",", ".");
+        var floorLength = CommandLineReader.FloorLength.ToString();
+        floorLength = floorLength.Replace(",", ".");
+        var distance = CommandLineReader.CameraToFloor.ToString();
+        distance = distance.Replace(",", ".");
+
+
+        realMinX = floorWidth != null ? -float.Parse(floorWidth) / 2 : -0.8f;
+        realMaxX = floorWidth != null ? float.Parse(floorWidth) / 2 : 0.8f;
+        if (distance != null || floorLength != null)
+        {
+            realMinY = float.Parse(distance) + float.Parse(floorLength);
+        }
+        else
+        {
+            realMinY = 3f;
+        }
+
+        realMaxY = distance != null ? float.Parse(distance) : 1.8f;
+
         transform.position = Vector3.zero;
         previousTarget = transform.position;
 
