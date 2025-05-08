@@ -52,10 +52,30 @@ public class GameAPI : MonoBehaviour
         }
         else
         {
-            onError?.Invoke(request.error);
+//            long statusCode = request.responseCode;
+
+//            if (statusCode == 401)
+//            {
+//                Debug.LogError("Unauthorized access. Closing game...");
+//                onError?.Invoke("Unauthorized");
+//                Application.Quit();
+
+//#if UNITY_EDITOR
+//                UnityEditor.EditorApplication.isPlaying = false;
+//#endif
+//            }
+//            else if (statusCode == 404)
+//            {
+//                Debug.LogWarning("High score not found. Returning 0.");
+//                onSuccess?.Invoke(0);
+//            }
+//            else
+//            {
+//                Debug.LogError($"Unexpected error: {request.error}");
+//                onError?.Invoke(request.error);
+//            }
         }
     }
-
     public IEnumerator PostPlayHistory(int finalScore, Action onSuccess, Action<string> onError)
     {
         PlayHistory history = new PlayHistory

@@ -58,7 +58,7 @@ public class GameManager : MonoBehaviour
         new WordData("hat", "pants"),
     };
     private int score = 0;
-    private float timeRemaining = 30f;
+    private float timeRemaining = 60f;
     private bool gameActive = true;
 
     private string correctAnswer;
@@ -253,7 +253,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         score = 0;
-        timeRemaining = 30f;
+        timeRemaining = 60f;
         gameActive = true;
         gameOverPanel.SetActive(false);
         scoreText.text = "Score: " + score;
